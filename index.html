@@ -10,8 +10,8 @@
     <header class="site-header">
       <h1>Virtual Cat Park</h1>
       <p class="welcome">
-        Welcome! Read about three lovely cat breeds and find the one that suits
-        you best.
+        Welcome! Read about three lovely cat breeds, then adopt one and take
+        care of it.
       </p>
     </header>
 
@@ -87,6 +87,62 @@
               </dd>
             </dl>
           </article>
+        </div>
+      </section>
+
+      <!-- ============ My Virtual Cat ============ -->
+      <section id="virtual-cat" class="panel" aria-labelledby="virtual-cat-title">
+        <h2 id="virtual-cat-title">My Virtual Cat</h2>
+
+        <!-- Adoption form -->
+        <form id="adoption-form" class="adoption-form" novalidate>
+          <div class="field">
+            <label for="cat-name">Cat name</label>
+            <input
+              id="cat-name"
+              name="catName"
+              type="text"
+              maxlength="20"
+              autocomplete="off"
+              placeholder="For example: Mochi"
+            />
+          </div>
+
+          <div class="field">
+            <label for="cat-breed">Breed</label>
+            <select id="cat-breed" name="catBreed">
+              <option value="British Shorthair">British Shorthair</option>
+              <option value="Maine Coon">Maine Coon</option>
+              <option value="Siamese">Siamese</option>
+            </select>
+          </div>
+
+          <p id="form-message" class="form-message" role="status" aria-live="polite"></p>
+
+          <button type="submit" class="button button-primary">Adopt</button>
+        </form>
+
+        <!-- Cat dashboard -->
+        <div id="cat-dashboard" class="cat-dashboard" hidden>
+          <h3 class="dashboard-title">Your cat</h3>
+
+          <dl class="stats">
+            <dt>Name</dt>
+            <dd id="stat-name">&mdash;</dd>
+            <dt>Breed</dt>
+            <dd id="stat-breed">&mdash;</dd>
+            <dt>Day</dt>
+            <dd id="stat-day">&mdash;</dd>
+            <dt>Growth stage</dt>
+            <dd id="stat-stage">&mdash;</dd>
+            <dt>Happiness</dt>
+            <dd id="stat-happiness">&mdash;</dd>
+          </dl>
+
+          <div class="actions">
+            <button type="button" id="feed-button" class="button">Feed</button>
+            <button type="button" id="play-button" class="button">Play</button>
+          </div>
         </div>
       </section>
     </main>
