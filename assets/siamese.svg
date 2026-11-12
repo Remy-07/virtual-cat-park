@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="160" height="160">
+  <title>Illustration of a Siamese</title>
+  <!-- tail: long, thin and dark -->
+  <path d="M110 134 C138 132 146 110 134 92" fill="none" stroke="#5A463A" stroke-width="9" stroke-linecap="round"/>
+  <!-- body: slim -->
+  <ellipse cx="80" cy="118" rx="31" ry="31" fill="#F5EAD8"/>
+  <!-- paws: dark points -->
+  <ellipse cx="64" cy="142" rx="11" ry="7" fill="#5A463A"/>
+  <ellipse cx="96" cy="142" rx="11" ry="7" fill="#5A463A"/>
+  <!-- ears: tall and slim, dark points -->
+  <polygon points="52,54 44,16 74,42" fill="#5A463A"/>
+  <polygon points="108,54 116,16 86,42" fill="#5A463A"/>
+  <polygon points="56,49 51,26 68,42" fill="#C79A9E"/>
+  <polygon points="104,49 109,26 92,42" fill="#C79A9E"/>
+  <!-- head: narrow -->
+  <ellipse cx="80" cy="64" rx="31" ry="31" fill="#F5EAD8"/>
+  <!-- dark face mask -->
+  <ellipse cx="80" cy="77" rx="18" ry="13" fill="#5A463A"/>
+  <!-- eyes: bright blue -->
+  <ellipse cx="67" cy="60" rx="8" ry="9" fill="#9ED3EE"/>
+  <ellipse cx="93" cy="60" rx="8" ry="9" fill="#9ED3EE"/>
+  <ellipse cx="67" cy="60" rx="3" ry="5" fill="#22303A"/>
+  <ellipse cx="93" cy="60" rx="3" ry="5" fill="#22303A"/>
+  <circle cx="69" cy="57" r="1.6" fill="#FFFFFF"/>
+  <circle cx="95" cy="57" r="1.6" fill="#FFFFFF"/>
+  <!-- nose and mouth on the mask -->
+  <polygon points="80,74 77,79 83,79" fill="#C79A9E"/>
+  <path d="M80 79 v3" stroke="#3A2C24" stroke-width="2" stroke-linecap="round"/>
+  <path d="M80 82 q-6 5 -11 1" fill="none" stroke="#3A2C24" stroke-width="2" stroke-linecap="round"/>
+  <path d="M80 82 q6 5 11 1" fill="none" stroke="#3A2C24" stroke-width="2" stroke-linecap="round"/>
+  <!-- whiskers -->
+  <path d="M46 72 h-12 M46 78 h-14 M114 72 h12 M114 78 h14" stroke="#7A6558" stroke-width="1.6" stroke-linecap="round"/>
+</svg>
