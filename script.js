@@ -1,25 +1,42 @@
 /* ============================================================
    Virtual Cat Park - script.js
    This file controls behaviour only: what happens when the
-   visitor adopts a cat, feeds it, or plays with it.
+   visitor adopts a cat, feeds it, plays with it, moves to the
+   next day, or starts over.
 
-   Round 2 keeps everything in memory. Saving the cat so it
-   survives a page refresh is added in the next round.
+   Where does the saved data live?
+   In the browser's localStorage, under the key
+   "virtualCatParkPetV1". It is stored on this computer, in this
+   browser, for this web address. Nothing is uploaded to GitHub.
    ============================================================ */
 
 "use strict";
 
 /* ---------- 1. Constants (the rules of the game) ---------- */
 
+// The only storage key this project uses.
+const STORAGE_KEY = "virtualCatParkPetV1";
+
 const MAX_NAME_LENGTH = 20;
 const START_DAY = 1;
 const START_HAPPINESS = 50;
 const FEED_GAIN = 10;
 const PLAY_GAIN = 10;
+const DAY_LOSS = 5;
 const HAPPINESS_MAX = 100;
 const HAPPINESS_MIN = 0;
 
+// How wide the growth bar is for each stage (in percent).
+const GROWTH_PERCENT = {
+  Kitten: 30,
+  "Young Cat": 65,
+  "Adult Cat": 100
+};
+
 /* ---------- 2. Element references ---------- */
+/* We look the elements up once and keep them in variables, so the
+   code below is easier to read than a long "document.getElementById"
+   everywhere. */
 
 const adoptionForm = document.getElementById("adoption-form");
 const nameInput = document.getElementById("cat-name");
@@ -32,19 +49,27 @@ const statBreed = document.getElementById("stat-breed");
 const statDay = document.getElementById("stat-day");
 const statStage = document.getElementById("stat-stage");
 const statHappiness = document.getElementById("stat-happiness");
+const growthCaption = document.getElementById("growth-caption");
+const growthBar = document.getElementById("growth-bar");
 
 const feedButton = document.getElementById("feed-button");
 const playButton = document.getElementById("play-button");
+const nextDayButton = document.getElementById("next-day-button");
+const startOverButton = document.getElementById("start-over-button");
 
 /* ---------- 3. The current cat ---------- */
 /* "cat" holds the cat the visitor owns right now, or null when
-   nobody has been adopted yet. */
+   nobody has been adopted yet. It always looks like:
+   { name: "Mochi", breed: "Siamese", day: 1, happiness: 50 } */
 
 let cat = null;
 
 /* ---------- 4. Rule functions ---------- */
+/* These are small on purpose: each one answers a single question,
+   so you can test it and explain it easily. */
 
-/* Which growth stage belongs to this day number? */
+/* Which growth stage belongs to this day number?
+   Day 1 -> Kitten, Day 2 and Day 3 -> Young Cat, Day 4 or later -> Adult Cat. */
 function stageFor(day) {
   if (day <= 1) {
     return "Kitten";
@@ -65,7 +90,57 @@ function addHappiness(happiness, amount) {
   return clamp(happiness + amount, HAPPINESS_MIN, HAPPINESS_MAX);
 }
 
-/* ---------- 5. Showing things on the page ---------- */
+/* Moving to the next day costs 5 happiness, but never below 0. */
+function loseHappiness(happiness) {
+  return clamp(happiness - DAY_LOSS, HAPPINESS_MIN, HAPPINESS_MAX);
+}
+
+/* ---------- 5. Storage functions ---------- */
+/* Cheap "save" and "load" helpers around localStorage. We always
+   turn the cat object into text with JSON.stringify, because
+   localStorage can only store text. */
+
+function saveCat(catToSave) {
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(catToSave));
+}
+
+/* Read the saved cat back. If anything looks broken, return null
+   instead of crashing, so the page still works. */
+function loadCat() {
+  const rawText = window.localStorage.getItem(STORAGE_KEY);
+  if (!rawText) {
+    return null;
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(rawText);
+  } catch (error) {
+    return null;
+  }
+
+  if (!parsed || typeof parsed.name !== "string" || typeof parsed.breed !== "string") {
+    return null;
+  }
+
+  const day = Number(parsed.day);
+  const happiness = Number(parsed.happiness);
+
+  return {
+    name: parsed.name,
+    breed: parsed.breed,
+    day: Number.isFinite(day) && day >= START_DAY ? Math.floor(day) : START_DAY,
+    happiness: Number.isFinite(happiness)
+      ? Math.floor(clamp(happiness, HAPPINESS_MIN, HAPPINESS_MAX))
+      : START_HAPPINESS
+  };
+}
+
+function clearSavedCat() {
+  window.localStorage.removeItem(STORAGE_KEY);
+}
+
+/* ---------- 6. Showing things on the page ---------- */
 
 /* Put a short message under the form, e.g. why a name was rejected. */
 function showMessage(text) {
@@ -75,11 +150,16 @@ function showMessage(text) {
 /* Draw one cat in the dashboard. The name is set with textContent,
    so it is shown as plain text and can never be treated as HTML. */
 function renderCat(catToShow) {
+  const stage = stageFor(catToShow.day);
+
   statName.textContent = catToShow.name;
   statBreed.textContent = catToShow.breed;
   statDay.textContent = String(catToShow.day);
-  statStage.textContent = stageFor(catToShow.day);
+  statStage.textContent = stage;
   statHappiness.textContent = String(catToShow.happiness);
+
+  growthCaption.textContent = "Growth: " + stage + " (day " + catToShow.day + ")";
+  growthBar.style.width = GROWTH_PERCENT[stage] + "%";
 
   adoptionForm.hidden = true;
   dashboard.hidden = false;
@@ -91,9 +171,9 @@ function showAdoptionForm() {
   dashboard.hidden = true;
 }
 
-/* ---------- 6. Actions ---------- */
+/* ---------- 7. Actions ---------- */
 
-/* Adopt: check the name, build a brand new cat, show it. */
+/* Adopt: check the name, build a brand new cat, save it, show it. */
 function adoptCat(event) {
   event.preventDefault();
 
@@ -120,31 +200,75 @@ function adoptCat(event) {
     happiness: START_HAPPINESS
   };
 
+  saveCat(cat);
   renderCat(cat);
 }
 
-/* Feed: happiness +10, then redraw. */
+/* Feed: happiness +10, then save and redraw. */
 function feedCat() {
   if (!cat) {
     return;
   }
   cat.happiness = addHappiness(cat.happiness, FEED_GAIN);
+  saveCat(cat);
   renderCat(cat);
 }
 
-/* Play: happiness +10, then redraw. */
+/* Play: happiness +10, then save and redraw. */
 function playWithCat() {
   if (!cat) {
     return;
   }
   cat.happiness = addHappiness(cat.happiness, PLAY_GAIN);
+  saveCat(cat);
   renderCat(cat);
 }
 
-/* ---------- 7. Start the page ---------- */
+/* Next Day: day +1 and happiness -5, then save and redraw. */
+function goToNextDay() {
+  if (!cat) {
+    return;
+  }
+  cat.day = cat.day + 1;
+  cat.happiness = loseHappiness(cat.happiness);
+  saveCat(cat);
+  renderCat(cat);
+}
 
+/* Start Over: ask first. If the visitor cancels, the cat stays.
+   If the visitor confirms, delete the saved progress and go back
+   to the adoption form. */
+function startOver() {
+  const confirmed = window.confirm(
+    "Start over? This deletes your saved cat and returns you to the adoption form."
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  clearSavedCat();
+  cat = null;
+  nameInput.value = "";
+  breedSelect.selectedIndex = 0;
+  showMessage("");
+  showAdoptionForm();
+}
+
+/* ---------- 8. Start the page ---------- */
+
+/* Connect each button and the form to the function it should run. */
 adoptionForm.addEventListener("submit", adoptCat);
 feedButton.addEventListener("click", feedCat);
 playButton.addEventListener("click", playWithCat);
+nextDayButton.addEventListener("click", goToNextDay);
+startOverButton.addEventListener("click", startOver);
 
-showAdoptionForm();
+/* When the page opens, try to restore a saved cat. */
+const savedCat = loadCat();
+if (savedCat) {
+  cat = savedCat;
+  renderCat(cat);
+} else {
+  showAdoptionForm();
+}

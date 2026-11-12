@@ -12,6 +12,7 @@
   --accent: #c2622f;
   --accent-dark: #9c4a20;
   --line: #e6ddd2;
+  --track: #efe6da;
   --radius: 14px;
 }
 
@@ -209,6 +210,11 @@ main,
   border-color: var(--accent-dark);
 }
 
+.button-quiet {
+  margin-top: 20px;
+  color: var(--ink-soft);
+}
+
 /* ---------- Dashboard ---------- */
 
 .dashboard-title {
@@ -220,7 +226,7 @@ main,
   display: grid;
   grid-template-columns: max-content 1fr;
   gap: 8px 16px;
-  margin: 0;
+  margin: 0 0 20px;
 }
 
 .stats dt {
@@ -232,6 +238,30 @@ main,
 .stats dd {
   margin: 0;
   font-weight: 600;
+}
+
+/* ---------- Growth bar ---------- */
+
+.growth-caption {
+  margin: 0 0 8px;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.growth-track {
+  height: 14px;
+  max-width: 420px;
+  background-color: var(--track);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.growth-bar {
+  height: 100%;
+  width: 30%;
+  background-color: var(--accent);
+  border-radius: 999px;
+  transition: width 0.3s ease;
 }
 
 /* ---------- Action buttons ---------- */

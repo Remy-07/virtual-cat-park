@@ -11,7 +11,7 @@
       <h1>Virtual Cat Park</h1>
       <p class="welcome">
         Welcome! Read about three lovely cat breeds, then adopt one and take
-        care of it.
+        care of it day by day.
       </p>
     </header>
 
@@ -94,7 +94,7 @@
       <section id="virtual-cat" class="panel" aria-labelledby="virtual-cat-title">
         <h2 id="virtual-cat-title">My Virtual Cat</h2>
 
-        <!-- Adoption form -->
+        <!-- Adoption form: shown when no cat is saved -->
         <form id="adoption-form" class="adoption-form" novalidate>
           <div class="field">
             <label for="cat-name">Cat name</label>
@@ -122,7 +122,7 @@
           <button type="submit" class="button button-primary">Adopt</button>
         </form>
 
-        <!-- Cat dashboard -->
+        <!-- Cat dashboard: shown when a cat is adopted or restored -->
         <div id="cat-dashboard" class="cat-dashboard" hidden>
           <h3 class="dashboard-title">Your cat</h3>
 
@@ -139,10 +139,22 @@
             <dd id="stat-happiness">&mdash;</dd>
           </dl>
 
+          <div class="growth">
+            <p id="growth-caption" class="growth-caption">Growth: &mdash;</p>
+            <div class="growth-track" aria-hidden="true">
+              <div id="growth-bar" class="growth-bar"></div>
+            </div>
+          </div>
+
           <div class="actions">
             <button type="button" id="feed-button" class="button">Feed</button>
             <button type="button" id="play-button" class="button">Play</button>
+            <button type="button" id="next-day-button" class="button">Next Day</button>
           </div>
+
+          <button type="button" id="start-over-button" class="button button-quiet">
+            Start Over
+          </button>
         </div>
       </section>
     </main>
